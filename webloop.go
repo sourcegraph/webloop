@@ -3,6 +3,7 @@ package webloop
 import (
 	"errors"
 	"github.com/sourcegraph/go-webkit2/webkit2"
+	"github.com/sqs/gojs"
 	"github.com/sqs/gotk3/glib"
 )
 
@@ -90,6 +91,31 @@ func (v *View) Title() string {
 		return false
 	})
 	return <-title
+}
+
+// EvaluateJavaScript runs the JavaScript in script in the view's context and
+// returns the script's result as a Go value.
+func (v *View) EvaluateJavaScript(script string) (result *gojs.Value, err error) {
+	resultChan := make(chan *gojs.Value, 1)
+	errChan := make(chan error, 1)
+
+	glib.IdleAdd(func() bool {
+		v.WebView.RunJavaScript(script, func(result *gojs.Value, err error) {
+			if err == nil {
+				resultChan <- result
+			} else {
+				errChan <- err
+			}
+		})
+		return false
+	})
+
+	select {
+	case result = <-resultChan:
+		return result, nil
+	case err = <-errChan:
+		return nil, err
+	}
 }
 
 // Close closes the view and releases associated resources. Ensure that Close is

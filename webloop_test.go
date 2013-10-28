@@ -1,8 +1,10 @@
 package webloop
 
 import (
+	"fmt"
 	"github.com/sqs/gotk3/gtk"
 	"net/http"
+	"reflect"
 	"runtime"
 	"testing"
 )
@@ -103,5 +105,54 @@ func TestView_Wait_multi(t *testing.T) {
 
 	if wantLoaded := 2; wantLoaded != loaded {
 		t.Errorf("want loaded == %d, got %d", wantLoaded, loaded)
+	}
+}
+
+func TestView_EvaluateJavaScript(t *testing.T) {
+	runtime.LockOSThread()
+
+	setup()
+	defer teardown()
+
+	html := `
+<html>
+  <head><title>qux</title></head>
+  <body><p id=foo>bar</p></body>
+</html>
+`
+	mux.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
+		w.Write([]byte(html))
+	})
+
+	tests := []struct {
+		script     string
+		wantResult interface{}
+		wantError  string
+	}{
+		{script: `"foo"`, wantResult: "foo"},
+		{script: `window.document.title`, wantResult: "qux"},
+		{script: `document.getElementById("foo").innerHTML`, wantResult: "bar"},
+	}
+
+	view := ctx.NewView()
+	defer view.Close()
+	view.Open(server.URL)
+	view.Wait()
+
+	for _, test := range tests {
+		label := fmt.Sprintf("script %q", test.script)
+		res, err := view.EvaluateJavaScript(test.script)
+		if err != nil {
+			t.Errorf("%s: EvaluateJavaScript error: %s", label, err)
+			continue
+		}
+		goval, err := res.GoValue()
+		if err != nil {
+			t.Errorf("%s: GoValue error: %s", label, err)
+			continue
+		}
+		if !reflect.DeepEqual(test.wantResult, goval) {
+			t.Errorf("%s: want result == %+v, got %+v", label, test.wantResult, res)
+		}
 	}
 }
