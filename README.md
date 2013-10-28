@@ -21,6 +21,13 @@ For instructions on installing these dependencies, see the [go-webkit2
 README](https://sourcegraph.com/github.com/sourcegraph/go-webkit2/readme).
 
 
+## Usage
+
+See the examples/angular-static-seo/ directory for an example of using WebLoop
+to generate static HTML pages from a dynamic [AngularJS](http://angularjs.org)
+single-page application.
+
+
 ## TODO
 
 * [Set up CI testing.](https://github.com/sourcegraph/webloop/issues/1) This
@@ -30,7 +37,6 @@ README](https://sourcegraph.com/github.com/sourcegraph/go-webkit2/readme).
   [PhantomJS's callPhantom]
   (https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#oncallback)
   mechanism.
-* Create example applications.
 
 
 ## Contributors
