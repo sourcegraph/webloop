@@ -3,11 +3,9 @@ package main
 import (
 	"flag"
 	"github.com/sourcegraph/webloop"
-	"github.com/sqs/gotk3/gtk"
 	"log"
 	"net/http"
-	"runtime"
-	"strings"
+	"os"
 	"time"
 )
 
@@ -22,7 +20,12 @@ func main() {
 	go start("app", *appBind, appMux)
 
 	staticMux := http.NewServeMux()
-	staticMux.HandleFunc("/", serveStatic)
+	staticHandler := &webloop.StaticRenderer{
+		TargetBaseURL: "http://localhost" + *appBind,
+		WaitTimeout:   time.Second * 3,
+		Log:           log.New(os.Stderr, "static: ", 0),
+	}
+	staticMux.Handle("/", staticHandler)
 	start("static", *staticBind, staticMux)
 }
 
@@ -36,61 +39,6 @@ func start(name, bind string, mux *http.ServeMux) {
 
 func serveApp(w http.ResponseWriter, r *http.Request) {
 	w.Write(page)
-}
-
-func init() {
-	gtk.Init(nil)
-	go func() {
-		runtime.LockOSThread()
-		gtk.Main()
-	}()
-}
-
-func serveStatic(w http.ResponseWriter, r *http.Request) {
-	var ctx webloop.Context
-
-	view := ctx.NewView()
-	defer view.Close()
-
-	r.URL.Host = "localhost" + *appBind
-	r.URL.Scheme = "http"
-	log.Printf("Generating static page for URL: %s", r.URL)
-	view.Open(r.URL.String())
-	view.Wait()
-
-	// Wait until window.$viewReadyForSnapshot is true.
-	timeout := time.Second * 3
-	start := time.Now()
-	for {
-		if time.Since(start) > timeout {
-			http.Error(w, "application did not set $viewReadyForSnapshot within timeout "+timeout.String(), http.StatusInternalServerError)
-			return
-		}
-
-		check, err := view.EvaluateJavaScript("window.$viewReadyForSnapshot")
-		if err != nil {
-			http.Error(w, "error checking $viewReadyForSnapshot: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-		ready, _ := check.GoValue()
-		if ready, ok := ready.(bool); !ok || !ready {
-			time.Sleep(timeout / 30)
-			continue
-		}
-
-		result, err := view.EvaluateJavaScript("document.documentElement.outerHTML")
-		if err != nil {
-			http.Error(w, "error generating static page: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-		html := result.String()
-		html = strings.Replace(html, "<body>", `<body><h3>This is a static page generated from <a href="`+r.URL.String()+`">`+r.URL.String()+`</a></h3><hr>`, 1)
-		html = strings.Replace(html, "ng-app=", "disabled-ng-app=", -1)
-		html = strings.Replace(html, "</pre>", "\nGenerated static page in "+time.Since(start).String()+"\n</pre>", 1)
-		w.Write([]byte(html))
-		return
-	}
-
 }
 
 var page = []byte(`
@@ -173,7 +121,7 @@ angular.module('staticSEO', ['ngRoute'])
             })[0];
             if (city) deferred.resolve(city); 
             else deferred.reject('No city found with ID "' + cityID + '"');
-          }, 500);
+          }, 250);
           return deferred.promise;
         },
       },
@@ -193,24 +141,24 @@ angular.module('staticSEO', ['ngRoute'])
   $rootScope.$location = $location;
   $rootScope.$route = $route;
 
-  $rootScope.$on('$viewReadyForSnapshot', function() {
-    $window.$viewReadyForSnapshot = true;
+  $rootScope.$on('$renderStaticReady', function() {
+    $window.$renderStaticReady = true;
   });
   $rootScope.$on('$routeChangeBegin', function() {
-    $window.$viewReadyForSnapshot = false;
+    $window.$renderStaticReady = false;
   });
 })
 
 .controller('CitiesCtrl', function($scope, $timeout) {
   $timeout(function() {
     $scope.cities = allCities;
-    $scope.$emit('$viewReadyForSnapshot');
-  }, 350);
+    $scope.$emit('$renderStaticReady');
+  }, 250);
 })
 
 .controller('CityCtrl', function($scope, city) {
   $scope.city = city;
-  $scope.$emit('$viewReadyForSnapshot');
+  $scope.$emit('$renderStaticReady');
 })
 
 ;

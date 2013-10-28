@@ -95,17 +95,25 @@ func (v *View) Title() string {
 
 // EvaluateJavaScript runs the JavaScript in script in the view's context and
 // returns the script's result as a Go value.
-func (v *View) EvaluateJavaScript(script string) (result *gojs.Value, err error) {
-	resultChan := make(chan *gojs.Value, 1)
+func (v *View) EvaluateJavaScript(script string) (result interface{}, err error) {
+	resultChan := make(chan interface{}, 1)
 	errChan := make(chan error, 1)
 
 	glib.IdleAdd(func() bool {
 		v.WebView.RunJavaScript(script, func(result *gojs.Value, err error) {
-			if err == nil {
-				resultChan <- result
-			} else {
-				errChan <- err
-			}
+			glib.IdleAdd(func() bool {
+				if err == nil {
+					goval, err := result.GoValue()
+					if err != nil {
+						errChan <- err
+						return false
+					}
+					resultChan <- goval
+				} else {
+					errChan <- err
+				}
+				return false
+			})
 		})
 		return false
 	})

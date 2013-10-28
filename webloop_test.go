@@ -146,12 +146,7 @@ func TestView_EvaluateJavaScript(t *testing.T) {
 			t.Errorf("%s: EvaluateJavaScript error: %s", label, err)
 			continue
 		}
-		goval, err := res.GoValue()
-		if err != nil {
-			t.Errorf("%s: GoValue error: %s", label, err)
-			continue
-		}
-		if !reflect.DeepEqual(test.wantResult, goval) {
+		if !reflect.DeepEqual(test.wantResult, res) {
 			t.Errorf("%s: want result == %+v, got %+v", label, test.wantResult, res)
 		}
 	}
