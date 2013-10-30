@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/sourcegraph/webloop"
 	"log"
 	"net/http"
@@ -12,9 +13,31 @@ import (
 
 var bind = flag.String("http", ":13000", "HTTP bind address")
 var targetURL = flag.String("target", "http://localhost:3000", "base URL of target")
-var redirectPrefixesStr = flag.String("redirect-prefixes", "/static,/api,/favicon.ico", "comma-separated list of path prefixes to redirect (not proxy and render)")
+var redirectPrefixesStr = flag.String("redirect-prefixes", "/static,/api,/favicon.ico", "comma-separated list of path prefixes to redirect to the target (not proxy and render)")
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintf(os.Stderr, "static-reverse-proxy proxies a dynamic JavaScript application and serves\n")
+		fmt.Fprintf(os.Stderr, "an equivalent statically rendered HTML website to clients. It uses a headless\n")
+		fmt.Fprintf(os.Stderr, "WebKit browser instance to render the static HTML.\n\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n\n")
+		fmt.Fprintf(os.Stderr, "\tstatic-reverse-proxy [options]\n\n")
+		fmt.Fprintf(os.Stderr, "The options are:\n\n")
+		flag.PrintDefaults()
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintf(os.Stderr, "Example usage:\n\n")
+		fmt.Fprintf(os.Stderr, "\tTo proxy a dynamic application at http://example.com and serve an equivalent\n")
+		fmt.Fprintf(os.Stderr, "\tstatically rendered HTML website on http://localhost:13000\n")
+		fmt.Fprintf(os.Stderr, "\t    $ static-reverse-proxy -target=http://example.com -bind=:13000\n\n")
+		fmt.Fprintf(os.Stderr, "Notes:\n\n")
+		fmt.Fprintf(os.Stderr, "\tBecause a headless WebKit instance is used, your $DISPLAY must be set. Use\n")
+		fmt.Fprintf(os.Stderr, "\tXvfb if you are running on a machine without an existing X server. See\n")
+		fmt.Fprintf(os.Stderr, "\thttps://sourcegraph.com/github.com/sourcegraph/webloop/readme for more info.\n")
+		fmt.Fprintln(os.Stderr)
+		os.Exit(1)
+	}
 	flag.Parse()
 
 	log := log.New(os.Stderr, "", 0)
