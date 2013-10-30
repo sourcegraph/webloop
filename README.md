@@ -23,9 +23,16 @@ README](https://sourcegraph.com/github.com/sourcegraph/go-webkit2/readme).
 
 ## Usage
 
-See the examples/angular-static-seo/ directory for an example of using WebLoop
-to generate static HTML pages from a dynamic [AngularJS](http://angularjs.org)
-single-page application.
+### Example: rendering static HTML from a dynamic, single-page [AngularJS](http://angularjs.org) app
+
+See the `examples/angular-static-seo/` directory for example code. Run the included binary with:
+
+```
+go run examples/angular-static-seo/server.go
+```
+
+Instructions will be printed for accessing the 2 local demo HTTP servers. Run
+with `-h` to see more information.
 
 
 ## TODO
