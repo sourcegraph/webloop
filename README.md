@@ -23,12 +23,32 @@ README](https://sourcegraph.com/github.com/sourcegraph/go-webkit2/readme).
 
 ## Usage
 
+
+### Static HTML rendering reverse proxy
+
+The included command `static-reverse-proxy` proxies a dynamic JavaScript application and serves an equivalent statically rendered HTML website to clients. Run it with:
+
+```
+$ go install github.com/sourcegraph/webloop/...
+$ static-reverse-proxy
+```
+
+For example, to proxy a dynamic application at http://example.com and serve an
+equivalent statically rendered HTML website on http://localhost:13000, run:
+
+```
+$ static-reverse-proxy -target=http://example.com -bind=:13000
+```
+
+Run with `-h` to see more information.
+
+
 ### Example: rendering static HTML from a dynamic, single-page [AngularJS](http://angularjs.org) app
 
 See the `examples/angular-static-seo/` directory for example code. Run the included binary with:
 
 ```
-go run examples/angular-static-seo/server.go
+$ go run examples/angular-static-seo/server.go
 ```
 
 Instructions will be printed for accessing the 2 local demo HTTP servers. Run
