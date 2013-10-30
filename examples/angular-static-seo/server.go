@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/sourcegraph/webloop"
 	"log"
 	"net/http"
@@ -13,7 +14,36 @@ var appBind = flag.String("app-http", ":9000", "HTTP bind address for AngularJS 
 var staticBind = flag.String("static-http", ":9100", "HTTP bind address for static app")
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintf(os.Stderr, "angular-static-seo demonstrates using WebLoop to generate a static HTML\n")
+		fmt.Fprintf(os.Stderr, "website from a dynamic, single-page AngularJS application.\n\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n\n")
+		fmt.Fprintf(os.Stderr, "\tangular-static-seo [options]\n\n")
+		fmt.Fprintf(os.Stderr, "The options are:\n\n")
+		flag.PrintDefaults()
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintf(os.Stderr, "Example usage:\n\n")
+		fmt.Fprintf(os.Stderr, "\tTo run the sample dynamic AngularJS app at http://localhost:9000 and\n")
+		fmt.Fprintf(os.Stderr, "\tthe statically rendered website at http://localhost:9100:\n\n")
+		fmt.Fprintf(os.Stderr, "\t    $ angular-static-seo http://example.com\n\n")
+		fmt.Fprintf(os.Stderr, "\tTry browsing to both and comparing them. View the HTML source of the\n")
+		fmt.Fprintf(os.Stderr, "\tstatic site to confirm that the page is, indeed, static HTML.\n")
+		fmt.Fprintln(os.Stderr)
+		os.Exit(1)
+	}
 	flag.Parse()
+
+	fmt.Fprintln(os.Stderr)
+	fmt.Fprintf(os.Stderr, "Launching two HTTP servers serving equivalent content:\n")
+	fmt.Fprintln(os.Stderr)
+	fmt.Fprintf(os.Stderr, "\tDynamic AngularJS app:     http://localhost%s\n", *appBind)
+	fmt.Fprintf(os.Stderr, "\tStatically rendered site:  http://localhost%s\n", *staticBind)
+	fmt.Fprintln(os.Stderr)
+	fmt.Fprintf(os.Stderr, "Try browsing to both and comparing them. View the HTML source of the\n")
+	fmt.Fprintf(os.Stderr, "static site to confirm that the page is, indeed, static HTML.\n")
+	fmt.Fprintln(os.Stderr)
 
 	appMux := http.NewServeMux()
 	appMux.HandleFunc("/", serveApp)
