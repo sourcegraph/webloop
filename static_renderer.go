@@ -97,7 +97,7 @@ func (h *StaticRenderer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 		html := result.(string)
-		html = strings.Replace(html, "<body>", `<body><h3>This is a static page generated from <a href="`+r.URL.String()+`">`+r.URL.String()+`</a></h3><hr>`, 1)
+		html = strings.Replace(html, "<body>", `<body><h3 style="padding:10px;background-color:red;color:white">This is a static page generated from <a style="color:white" href="`+r.URL.String()+`">`+r.URL.String()+`</a></h3><hr>`, 1)
 		html = strings.Replace(html, "<script", `<script type="text/disabled"`, -1)
 		w.Write([]byte(html))
 		return
