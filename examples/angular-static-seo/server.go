@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-var appBind = flag.String("app-http", ":9000", "HTTP bind address for AngularJS app")
-var staticBind = flag.String("static-http", ":9100", "HTTP bind address for static app")
+var appBind = flag.String("app-http", ":9090", "HTTP bind address for AngularJS app")
+var staticBind = flag.String("static-http", ":9091", "HTTP bind address for static app")
 
 func main() {
 	flag.Usage = func() {
@@ -25,8 +25,8 @@ func main() {
 		fmt.Fprintln(os.Stderr)
 		fmt.Fprintln(os.Stderr)
 		fmt.Fprintf(os.Stderr, "Example usage:\n\n")
-		fmt.Fprintf(os.Stderr, "\tTo run the sample dynamic AngularJS app at http://localhost:9000 and\n")
-		fmt.Fprintf(os.Stderr, "\tthe statically rendered website at http://localhost:9100:\n\n")
+		fmt.Fprintf(os.Stderr, "\tTo run the sample dynamic AngularJS app at http://localhost:9090 and\n")
+		fmt.Fprintf(os.Stderr, "\tthe statically rendered website at http://localhost:9091:\n\n")
 		fmt.Fprintf(os.Stderr, "\t    $ angular-static-seo http://example.com\n\n")
 		fmt.Fprintf(os.Stderr, "\tTry browsing to both and comparing them. View the HTML source of the\n")
 		fmt.Fprintf(os.Stderr, "\tstatic site to confirm that the page is, indeed, static HTML.\n")
