@@ -10,6 +10,7 @@ Headless WebKit with a Go API. Inspired by [PhantomJS](http://phantomjs.org/).
 [![top func](https://sourcegraph.com/api/repos/github.com/sourcegraph/webloop/badges/top-func.png)](https://sourcegraph.com/github.com/sourcegraph/webloop)
 [![library users](https://sourcegraph.com/api/repos/github.com/sourcegraph/webloop/badges/library-users.png)](https://sourcegraph.com/github.com/sourcegraph/webloop)
 
+![Screenshot of a dynamic AngularJS application running side-by-side with a statically rendered HTML equivalent, using WebLoop](https://s3-us-west-2.amazonaws.com/sourcegraph-assets/webloop.png)
 
 ## Requirements
 
