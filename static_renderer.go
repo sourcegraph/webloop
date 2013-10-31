@@ -23,6 +23,18 @@ type StaticRenderer struct {
 	// window.$renderStaticReady.
 	WaitTimeout time.Duration
 
+	// ReturnUnfinishedPages is whether a page that has not set
+	// window.$renderStaticReady after WaitTimeout is sent to the browser in a
+	// (potentially) unfinished state. If false, an HTTP 502 Bad Gateway error
+	// will be returned.
+	//
+	// If you are unsure of whether all accessible pages set
+	// window.$renderStaticReady (perhaps you could forget to do so on a few
+	// pages), then setting ReturnUnfinishedPages would suppress errors for
+	// those pages, at the possible expense of sending out unfinished pages that
+	// take a long time to load.
+	ReturnUnfinishedPages bool
+
 	// Log is the logger to use for log messages. If nil, there is no log
 	// output.
 	Log *log.Logger
@@ -74,6 +86,9 @@ func (h *StaticRenderer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	for {
 		if time.Since(start) > h.WaitTimeout {
+			if h.ReturnUnfinishedPages {
+				break
+			}
 			h.logf("Page at URL %s did not set $renderStaticReady within timeout %s", targetURL, h.WaitTimeout)
 			http.Error(w, "No response from origin server within "+h.WaitTimeout.String(), http.StatusBadGateway)
 			return
@@ -84,24 +99,22 @@ func (h *StaticRenderer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "error checking $renderStaticReady: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if ready, ok := ready.(bool); !ok || !ready {
-			time.Sleep(time.Millisecond * 50)
-			continue
+		if ready, _ := ready.(bool); ready {
+			break
 		}
+	}
 
-		result, err := h.view.EvaluateJavaScript("document.documentElement.outerHTML")
-		if err != nil {
-			h.logf("Failed to dump HTML for page at URL %s: %s", targetURL, err)
-			http.Error(w, "", http.StatusInternalServerError)
-			return
-		}
-
-		html := result.(string)
-		html = strings.Replace(html, "<body>", `<body><h3 style="padding:10px;background-color:red;color:white">This is a static page generated from <a style="color:white" href="`+r.URL.String()+`">`+r.URL.String()+`</a></h3><hr>`, 1)
-		html = strings.Replace(html, "<script", `<script type="text/disabled"`, -1)
-		w.Write([]byte(html))
+	result, err := h.view.EvaluateJavaScript("document.documentElement.outerHTML")
+	if err != nil {
+		h.logf("Failed to dump HTML for page at URL %s: %s", targetURL, err)
+		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
+
+	html := result.(string)
+	html = strings.Replace(html, "<body>", `<body><h3 style="padding:10px;background-color:red;color:white">This is a static page generated from <a style="color:white" href="`+r.URL.String()+`">`+r.URL.String()+`</a></h3><hr>`, 1)
+	html = strings.Replace(html, "<script", `<script type="text/disabled"`, -1)
+	w.Write([]byte(html))
 }
 
 func (h *StaticRenderer) logf(msg string, v ...interface{}) {
