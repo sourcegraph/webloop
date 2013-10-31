@@ -1,6 +1,7 @@
 package webloop
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/sqs/gotk3/gtk"
 	"net/http"
@@ -148,6 +149,43 @@ func TestView_EvaluateJavaScript(t *testing.T) {
 		}
 		if !reflect.DeepEqual(test.wantResult, res) {
 			t.Errorf("%s: want result == %+v, got %+v", label, test.wantResult, res)
+		}
+	}
+}
+
+func TestView_Console(t *testing.T) {
+	runtime.LockOSThread()
+
+	setup()
+	defer teardown()
+
+	tests := []struct {
+		script    string
+		wantLog   interface{}
+		wantError string
+	}{
+		{script: ``, wantLog: ""},
+		{script: `console.log("foo")`, wantLog: "foo\n"},
+		{script: `throw new Error("foo")`, wantLog: "foo\n"},
+	}
+
+	view := ctx.NewView()
+	defer view.Close()
+	view.Open("about:blank")
+	view.Wait()
+
+	for _, test := range tests {
+		var buf bytes.Buffer
+		view.Console = &buf
+		label := fmt.Sprintf("script %q", test.script)
+		_, err := view.EvaluateJavaScript(test.script)
+		if err != nil {
+			t.Errorf("%s: EvaluateJavaScript error: %s", label, err)
+			continue
+		}
+		log := buf.String()
+		if test.wantLog != log {
+			t.Errorf("%s: want log == %q, got %q", label, test.wantLog, log)
 		}
 	}
 }

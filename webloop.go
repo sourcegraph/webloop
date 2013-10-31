@@ -2,9 +2,11 @@ package webloop
 
 import (
 	"errors"
+	"fmt"
 	"github.com/sourcegraph/go-webkit2/webkit2"
 	"github.com/sqs/gojs"
 	"github.com/sqs/gotk3/glib"
+	"io"
 )
 
 // ErrLoadFailed indicates that the View failed to load the requested resource.
@@ -38,6 +40,15 @@ func (c *Context) NewView() *View {
 			v.lastLoadErr = ErrLoadFailed
 			webView.HandlerDisconnect(loadChangedHandler)
 		})
+		webView.Connect("console-message", func(ctx *glib.CallbackContext) bool {
+			if v.Console != nil {
+				msg := ctx.Arg(0).String()
+				line := ctx.Arg(1).Int()
+				source := ctx.Arg(2).String()
+				fmt.Fprintf(v.Console, "%s [%s:%d]\n", msg, source, line)
+			}
+			return false
+		})
 		view <- v
 		return false
 	})
@@ -48,6 +59,11 @@ func (c *Context) NewView() *View {
 // query information about them.
 type View struct {
 	*webkit2.WebView
+
+	// Console is an io.Writer that browser console log messages are written to
+	// (i.e., console.log, console.error, etc.). If Console is nil, console logs
+	// are discarded.
+	Console io.Writer
 
 	load        chan struct{}
 	lastLoadErr error
