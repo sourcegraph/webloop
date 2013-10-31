@@ -87,9 +87,10 @@ func (h *StaticRenderer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	for {
 		if time.Since(start) > h.WaitTimeout {
 			if h.ReturnUnfinishedPages {
+				h.logf("Page at URL %s did not set $renderStaticReady within timeout %s; returning unfinished page", targetURL, h.WaitTimeout)
 				break
 			}
-			h.logf("Page at URL %s did not set $renderStaticReady within timeout %s", targetURL, h.WaitTimeout)
+			h.logf("Page at URL %s did not set $renderStaticReady within timeout %s; returning HTTP error", targetURL, h.WaitTimeout)
 			http.Error(w, "No response from origin server within "+h.WaitTimeout.String(), http.StatusBadGateway)
 			return
 		}
