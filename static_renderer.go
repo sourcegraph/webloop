@@ -35,6 +35,13 @@ type StaticRenderer struct {
 	// take a long time to load.
 	ReturnUnfinishedPages bool
 
+	// RemoveJavaScript indicates whether <script> tags will be removed. When
+	// generating static HTML pages from a dynamic JavaScript app, this is often
+	// necessary because the JavaScript expects to run on a non-bootstrapped
+	// page. This option is not guaranteed to disable all <script> tags and
+	// should relied upon for security purposes.
+	RemoveScripts bool
+
 	// Log is the logger to use for log messages. If nil, there is no log
 	// output.
 	Log *log.Logger
@@ -114,7 +121,9 @@ func (h *StaticRenderer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	html := result.(string)
 	html = strings.Replace(html, "<body>", `<body><h3 style="padding:10px;background-color:red;color:white">This is a static page generated from <a style="color:white" href="`+r.URL.String()+`">`+r.URL.String()+`</a></h3><hr>`, 1)
-	html = strings.Replace(html, "<script", `<script type="text/disabled"`, -1)
+	if h.RemoveScripts {
+		html = strings.Replace(html, "<script", `<script type="text/disabled"`, -1)
+	}
 	w.Write([]byte(html))
 }
 

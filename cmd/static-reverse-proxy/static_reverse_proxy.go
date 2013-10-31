@@ -15,6 +15,7 @@ var bind = flag.String("http", ":13000", "HTTP bind address")
 var targetURL = flag.String("target", "http://localhost:3000", "base URL of target")
 var waitTimeout = flag.Duration("wait", time.Second*3, "timeout for pages to set window.$renderStaticReady")
 var returnUnfinishedPages = flag.Bool("unfinished", false, "return unfinished pages at wait timeout (instead of erroring)")
+var removeScripts = flag.Bool("remove-scripts", false, "remove <script> tags")
 var redirectPrefixesStr = flag.String("redirect-prefixes", "/static,/api,/favicon.ico", "comma-separated list of path prefixes to redirect to the target (not proxy and render)")
 
 func main() {
@@ -53,7 +54,8 @@ func main() {
 		TargetBaseURL:         *targetURL,
 		WaitTimeout:           *waitTimeout,
 		ReturnUnfinishedPages: *returnUnfinishedPages,
-		Log: log,
+		RemoveScripts:         *removeScripts,
+		Log:                   log,
 	}
 	h := func(w http.ResponseWriter, r *http.Request) {
 		for _, rp := range redirectPrefixes {
