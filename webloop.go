@@ -23,6 +23,7 @@ func (c *Context) NewView() *View {
 	view := make(chan *View, 1)
 	glib.IdleAdd(func() bool {
 		webView := webkit2.NewWebView()
+		webView.Settings().SetEnableWriteConsoleMessagesToStdout(true)
 		v := &View{WebView: webView}
 		loadChangedHandler, _ := webView.Connect("load-changed", func(ctx *glib.CallbackContext) {
 			loadEvent := webkit2.LoadEvent(ctx.Arg(0).Int())
