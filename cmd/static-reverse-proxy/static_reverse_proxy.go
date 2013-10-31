@@ -13,6 +13,8 @@ import (
 
 var bind = flag.String("http", ":13000", "HTTP bind address")
 var targetURL = flag.String("target", "http://localhost:3000", "base URL of target")
+var waitTimeout = flag.Duration("wait", time.Second*3, "timeout for pages to set window.$renderStaticReady")
+var returnUnfinishedPages = flag.Bool("unfinished", false, "return unfinished pages at wait timeout (instead of erroring)")
 var redirectPrefixesStr = flag.String("redirect-prefixes", "/static,/api,/favicon.ico", "comma-separated list of path prefixes to redirect to the target (not proxy and render)")
 
 func main() {
@@ -48,9 +50,10 @@ func main() {
 	}
 
 	staticRenderer := &webloop.StaticRenderer{
-		TargetBaseURL: *targetURL,
-		WaitTimeout:   time.Second * 3,
-		Log:           log,
+		TargetBaseURL:         *targetURL,
+		WaitTimeout:           *waitTimeout,
+		ReturnUnfinishedPages: *returnUnfinishedPages,
+		Log: log,
 	}
 	h := func(w http.ResponseWriter, r *http.Request) {
 		for _, rp := range redirectPrefixes {
