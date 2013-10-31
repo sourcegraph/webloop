@@ -44,7 +44,19 @@ $ static-reverse-proxy -target=http://example.com -bind=:13000
 Run with `-h` to see more information.
 
 
-### Example: rendering static HTML from a dynamic, single-page [AngularJS](http://angularjs.org) app
+### Rendering static HTML from a dynamic, single-page [AngularJS](http://angularjs.org) app
+
+`StaticRenderer` is an HTTP handler that serves a static HTML version of a
+dynamic web application. Use it like:
+
+```go
+staticHandler := &webloop.StaticRenderer{
+        TargetBaseURL:         "http://dynamic-app.example.com",
+        WaitTimeout:           time.Second * 3,
+        ReturnUnfinishedPages: true
+}
+http.Handle("/", staticHandler)
+```
 
 See the `examples/angular-static-seo/` directory for example code. Run the included binary with:
 
@@ -54,6 +66,41 @@ $ go run examples/angular-static-seo/server.go
 
 Instructions will be printed for accessing the 2 local demo HTTP servers. Run
 with `-h` to see more information.
+
+
+### Operating a headless WebKit and running arbitrary JavaScript in the page
+
+```go
+package webloop_test
+
+import (
+	"fmt"
+	"github.com/sourcegraph/webloop"
+	"os"
+)
+
+func Example() {
+	ctx := webloop.New()
+	view := ctx.NewView()
+	defer view.Close()
+	view.Open("http://google.com")
+	err := view.Wait()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to load URL: %s", err)
+		os.Exit(1)
+	}
+	res, err := view.EvaluateJavaScript("document.title")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to run JavaScript: %s", err)
+		os.Exit(1)
+	}
+	fmt.Printf("JavaScript returned: %q\n", res)
+	// output:
+	// JavaScript returned: "Google"
+}
+```
+
+See `webloop_test.go` for more examples.
 
 
 ## TODO
