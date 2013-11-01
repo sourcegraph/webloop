@@ -21,7 +21,7 @@ Headless WebKit with a Go API. Inspired by [PhantomJS](http://phantomjs.org/).
 For instructions on installing these dependencies, see the [go-webkit2
 README](https://sourcegraph.com/github.com/sourcegraph/go-webkit2/readme).
 
-To install WebLoop, run: `go get github.com/sourcegraph/...`
+To install WebLoop, run: `go get github.com/sourcegraph/webloop/...`
 
 
 ## Usage
