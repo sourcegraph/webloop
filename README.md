@@ -1,6 +1,6 @@
 # WebLoop
 
-Headless WebKit with a Go API. Render static HTML versions of dynamic JavaScript applications, automate browsing, run arbitrary JavaScript in a browser window context, etc., all from Go or the command line. Inspired by [PhantomJS](http://phantomjs.org/).
+Scriptable, headless WebKit with a Go API. Like [PhantomJS](http://phantomjs.org/), but for Go. Render static HTML versions of dynamic JavaScript applications, automate browsing, run arbitrary JavaScript in a browser window context, etc., all from Go or the command line.
 
 * [Documentation on Sourcegraph](https://sourcegraph.com/github.com/sourcegraph/webloop/tree)
 
