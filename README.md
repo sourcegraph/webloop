@@ -116,6 +116,11 @@ See `webloop_test.go` for more examples.
   mechanism.
 
 
+## Users
+
+* WebLoop is used to render static HTML pages on [Sourcegraph](https://sourcegraph.com) for search engine crawlers
+
+
 ## Contributors
 
 See the AUTHORS file for a list of contributors.
