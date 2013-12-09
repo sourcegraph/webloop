@@ -40,7 +40,7 @@ For example, to proxy a dynamic application at http://example.com and serve an
 equivalent statically rendered HTML website on http://localhost:13000, run:
 
 ```
-$ static-reverse-proxy -target=http://example.com -bind=:13000
+$ static-reverse-proxy -target=http://example.com -http=:13000
 ```
 
 Run with `-h` to see more information.
