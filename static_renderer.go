@@ -1,13 +1,14 @@
 package webloop
 
 import (
-	"github.com/sqs/gotk3/gtk"
 	"log"
 	"net/http"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/conformal/gotk3/gtk"
 )
 
 // StaticRenderer generates and returns static HTML based on a snapshot of a Web

@@ -2,11 +2,12 @@ package webloop
 
 import (
 	"fmt"
-	"github.com/sqs/gotk3/gtk"
 	"net/http"
 	"reflect"
 	"runtime"
 	"testing"
+
+	"github.com/conformal/gotk3/gtk"
 )
 
 func init() {

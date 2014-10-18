@@ -2,8 +2,9 @@ package webloop_test
 
 import (
 	"fmt"
-	"github.com/sourcegraph/webloop"
 	"os"
+
+	"github.com/sourcegraph/webloop"
 )
 
 func Example() {

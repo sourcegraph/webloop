@@ -2,9 +2,10 @@ package webloop
 
 import (
 	"errors"
+
+	"github.com/conformal/gotk3/glib"
 	"github.com/sourcegraph/go-webkit2/webkit2"
 	"github.com/sqs/gojs"
-	"github.com/sqs/gotk3/glib"
 )
 
 // ErrLoadFailed indicates that the View failed to load the requested resource.
@@ -27,8 +28,7 @@ func (c *Context) NewView() *View {
 		settings.SetEnableWriteConsoleMessagesToStdout(true)
 		settings.SetUserAgentWithApplicationDetails("WebLoop", "v1")
 		v := &View{WebView: webView}
-		loadChangedHandler, _ := webView.Connect("load-changed", func(ctx *glib.CallbackContext) {
-			loadEvent := webkit2.LoadEvent(ctx.Arg(0).Int())
+		loadChangedHandler, _ := webView.Connect("load-changed", func(_ *glib.Object, loadEvent webkit2.LoadEvent) {
 			switch loadEvent {
 			case webkit2.LoadFinished:
 				// If we're here, then the load must not have failed, because
