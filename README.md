@@ -77,11 +77,20 @@ package webloop_test
 
 import (
 	"fmt"
-	"github.com/sourcegraph/webloop"
 	"os"
+	"runtime"
+
+	"github.com/conformal/gotk3/gtk"
+	"github.com/sourcegraph/webloop"
 )
 
 func Example() {
+	gtk.Init(nil)
+	go func() {
+		runtime.LockOSThread()
+		gtk.Main()
+	}()
+
 	ctx := webloop.New()
 	view := ctx.NewView()
 	defer view.Close()
