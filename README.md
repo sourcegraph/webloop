@@ -2,7 +2,7 @@
 
 Scriptable, headless WebKit with a Go API. Like [PhantomJS](http://phantomjs.org/), but for Go. Render static HTML versions of dynamic JavaScript applications, automate browsing, run arbitrary JavaScript in a browser window context, etc., all from Go or the command line.
 
-* [Documentation on Sourcegraph](https://sourcegraph.com/github.com/sourcegraph/webloop/tree)
+* [Documentation on Sourcegraph](https://sourcegraph.com/github.com/sourcegraph/webloop)
 
 [![status](https://sourcegraph.com/api/repos/github.com/sourcegraph/webloop/badges/status.png)](https://sourcegraph.com/github.com/sourcegraph/webloop)
 
@@ -12,10 +12,10 @@ Scriptable, headless WebKit with a Go API. Like [PhantomJS](http://phantomjs.org
 
 * [Go](http://golang.org) >= 1.2rc1 (due to [#3250](https://code.google.com/p/go/issues/detail?id=3250))
 * [WebKitGTK+](http://webkitgtk.org/) >= 2.0.0
-* [go-webkit2](https://sourcegraph.com/github.com/sourcegraph/go-webkit2/readme)
+* [go-webkit2](https://sourcegraph.com/github.com/sourcegraph/go-webkit2)
 
 For instructions on installing these dependencies, see the [go-webkit2
-README](https://sourcegraph.com/github.com/sourcegraph/go-webkit2/readme).
+README](https://sourcegraph.com/github.com/sourcegraph/go-webkit2@master/.tree/README.md).
 
 To install WebLoop, run: `go get github.com/sourcegraph/webloop/...`
 
