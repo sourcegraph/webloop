@@ -76,7 +76,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/conformal/gotk3/gtk"
+	"github.com/gotk3/gotk3/gtk"
 	"github.com/sourcegraph/webloop"
 )
 
