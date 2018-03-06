@@ -70,6 +70,17 @@ func (v *View) Open(url string) {
 	})
 }
 
+func (v *View) Load(content, baseUrl string) {
+	v.load = make(chan struct{}, 1)
+	v.lastLoadErr = nil
+	glib.IdleAdd(func() bool {
+		if !v.destroyed {
+			v.WebView.LoadHTML(content, baseUrl)
+		}
+		return false
+	})
+}
+
 // Wait waits for the current page to finish loading.
 func (v *View) Wait() error {
 	<-v.load
